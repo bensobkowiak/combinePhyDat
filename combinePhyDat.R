@@ -8,9 +8,9 @@ combinePhyDat<-function(phyDat1,phyDat2,outfile){
   require(phangorn)
   require(stringr)
   
-  #load(phyDat1) 
+  load(phyDat1) 
   phydat1<-dna_phydat
-  #load(phyDat2)
+  load(phyDat2)
   phydat2<-dna_phydat
   rm(dna_phydat)
   index1<-attr(phydat1,"index")
