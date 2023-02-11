@@ -6,48 +6,37 @@
 combinePhyDat<-function(phyDat1,phyDat2,outfile){
   
   require(phangorn)
+  require(stringr)
   
-  load(phyDat1) 
+  #load(phyDat1) 
+  load("dna_phyDat.Lin2_1.RData")
   phydat1<-dna_phydat
-  load(phyDat2)
+  #load(phyDat2)
+  load("dna_phyDat.Lin2_2.RData")
   phydat2<-dna_phydat
-  
+  rm(dna_phydat)
   index1<-attr(phydat1,"index")
   index2<-attr(phydat2,"index")
   
-  phydat1_list<-paste0(as.character(lapply(phydat1, `[[`, 1)),collapse = ",")
-  for (i in 2:max(index1)){
-    phydat1_list<-c(phydat1_list,paste0(as.character(lapply(phydat1, `[[`, i)),collapse = ","))
-  }
-  phydat2_list<-paste0(as.character(lapply(phydat2, `[[`, 1)),collapse = ",")
-  for (i in 2:max(index2)){
-    phydat2_list<-c(phydat2_list,paste0(as.character(lapply(phydat2, `[[`, i)),collapse = ","))
-  }
-  newlist<-list()
-  for (i in 1:length(phydat2_list)){
-    newlist<-c(newlist,paste0(phydat1_list[index1[i]],",",phydat2_list[index2[i]]))
-  }
-  finallist<-unique(newlist)
-  newindex<-rep(0,length(index1))
-  for (i in 1:length(finallist)){
-    newindex[which(grepl(finallist[i],newlist)==T)]<-i
-  }
-  new_weights<-rep(0,length(finallist))
-  for (i in 1:length(new_weights)){
-    new_weights[i]<-length(which(grepl(finallist[i],newlist)==T))
-  }
+  joined_index<-paste0(index1,":",index2)
+  finalhaplo<-unique(joined_index)
+  newindex<-match(joined_index, unique(joined_index))
+  newweight <- as.integer(table(joined_index))
   newnames<-c(names(phydat1),names(phydat2))
-  finallist<-t(matrix(unlist(lapply(finallist,function(x) (strsplit(x, ",")))),
-                      ncol=length(newnames),byrow = T))
-  row.names(finallist)<-newnames
-  new.list <- setNames(split(as.integer(finallist), seq(nrow(finallist))), rownames(finallist))
+  
+  first_element<-as.integer(vapply(strsplit(finalhaplo,":"), `[`, 1, FUN.VALUE=character(1)))
   for (i in 1:length(phydat1)){
-    phydat1[[i]]<-new.list[[i]]
+    newhaplo<-c(phydat1[[i]][first_element[1:length(first_element)]])
+    phydat1[[i]]<-newhaplo
   }
-  for (i in length(phydat1)+1:length(phydat2)){
-    phydat1[[newnames[i]]]<-new.list[[i]]
+  
+  second_element<-as.integer(vapply(strsplit(finalhaplo,":"), `[`, 2, FUN.VALUE=character(1)))
+  for (i in 1:length(phydat2)){
+    newhaplo<-c(phydat2[[i]][second_element[1:length(second_element)]])
+    phydat1[[names(phydat2)[i]]]<-newhaplo
   }
-  attr(phydat1,"weight")<-new_weights
+  
+  attr(phydat1,"weight")<-newweight
   attr(phydat1,"index")<-newindex
   attr(phydat1,"nr")<-length(phydat1[[1]])
   save(phydat1, file =paste0(outfile,'.RData'))
