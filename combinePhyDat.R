@@ -8,13 +8,15 @@ combinePhyDat<-function(phyDat1,phyDat2,outfile){
   require(phangorn)
   require(stringr)
   
-  load(phyDat1) 
-  phydat1<-dna_phydat
-  load(phyDat2)
-  phydat2<-dna_phydat
-  rm(dna_phydat)
+  obj <- load(phyDat1)
+  phydat1 <- get(obj)
+
+  obj <- load(phyDat2)
+  phydat2 <- get(obj)
+  
   index1<-attr(phydat1,"index")
   index2<-attr(phydat2,"index")
+  
   
   joined_index<-paste0(index1,":",index2)
   finalhaplo<-unique(joined_index)
