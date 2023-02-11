@@ -9,10 +9,8 @@ combinePhyDat<-function(phyDat1,phyDat2,outfile){
   require(stringr)
   
   #load(phyDat1) 
-  load("dna_phyDat.Lin2_1.RData")
   phydat1<-dna_phydat
   #load(phyDat2)
-  load("dna_phyDat.Lin2_2.RData")
   phydat2<-dna_phydat
   rm(dna_phydat)
   index1<-attr(phydat1,"index")
