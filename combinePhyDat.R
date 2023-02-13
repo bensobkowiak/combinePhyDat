@@ -21,7 +21,7 @@ combinePhyDat<-function(phyDat1,phyDat2,outfile){
   joined_index<-paste0(index1,":",index2)
   finalhaplo<-unique(joined_index)
   newindex<-match(joined_index, unique(joined_index))
-  newweight <- as.integer(table(joined_index))
+  newweight <- as.integer(table(newindex))
   newnames<-c(names(phydat1),names(phydat2))
   
   first_element<-as.integer(vapply(strsplit(finalhaplo,":"), `[`, 1, FUN.VALUE=character(1)))
